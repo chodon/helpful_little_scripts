@@ -1,0 +1,17 @@
+##for every line in a file, do something
+while read p; do grep "$p" trxSpalnPlusAssembledx3.seqtk.out | awk 'BEGIN{FS="\t"}{sum+=($3+$4+$5+$6)}END{print sum}'; done <listGenesAtram.txt
+
+##for every file, rename file
+for file in *fasta; do mv "$file" "${file/fasta/best.fasta}"; done
+
+##for every file, do or change something (e.g. change names of fasta headers, run mafft)
+for i in $(find . -name "*.fasta"); do sed 's/.* iteration=/>/g' ${i} | sed 's/ contig_id/.0_contigid/g' | sed 's/contigid.*length_//g' | sed 's/_cov.* score=/_/g' | sed 's/\.[0-9]*$//g' > ${i}.aTRAM1.fasta; done
+for i in $(find . -name "*.fa"); do mafft --adjustdirectionaccurately ${i} > ${i}.mafft; done
+
+##find longest contig in a fasta file and print it out
+for i in $(find . -name "*.best.fasta"); do cat ${i} | perl -e 'while (<>) {$h=$_; $s=<>; $seqs{$h}=$s;} foreach $header (reverse sort {length($seqs{$a}) <=> length($seqs{$b})} keys %seqs) {print $header.$seqs{$header}}' | head -2 > ${i}.longest.fasta; done
+ 
+##cat together two files based on a part of their names
+for file1 in *.velvet.fasta; do file2=${file1/velvet/spades}; cat $file1 $file2 > cat.$file1; done
+ 
+ 
