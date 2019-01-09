@@ -1,6 +1,8 @@
 ##for every line in a file, do something
 while read p; do grep "$p" trxSpalnPlusAssembledx3.seqtk.out | awk 'BEGIN{FS="\t"}{sum+=($3+$4+$5+$6)}END{print sum}'; done <listGenesAtram.txt
-
+   ## for example, get the name of the sequence that is longest for each gene, given a list of genes and a seqtk comp output
+   while read p; do grep "$p" costus240seqtk.out | awk -v max=0 '{if(($3+$4+$5+$6)>max){want=$1; max=($3+$4+$5+$6)}}END{print want}'; done <250.list
+  
 ##for every file, rename file
 for file in *fasta; do mv "$file" "${file/fasta/best.fasta}"; done
 
